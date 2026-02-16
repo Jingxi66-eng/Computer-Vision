@@ -1,0 +1,20 @@
+clear all;clc; 
+flag = imread('"D:\\plant.jpg"'); % read image   
+figure;
+imshow(flag);    
+flag_hsv = rgb2hsv(flag); 
+flag_new = 255*ones(size(flag)); 
+flag_new_hsv = rgb2hsv(flag_new); 
+
+[row, col] = ind2sub(size(flag_hsv),find(flag_hsv(:,:,1)>0.12...
+& flag_hsv(:,:,1)< 0.6 & flag_hsv(:,:,2)>0.16 & flag_hsv(:,:,3)>0.18));
+
+for i = 1 : length(row)
+    flag_new_hsv(row(i),col(i),:) = flag_hsv(row(i),col(i),:);
+end
+
+flag_green = hsv2rgb(flag_new_hsv);
+figure
+imshow(flag_green)
+I = rgb2gray(flag_green); 
+figure,imshow(I);
