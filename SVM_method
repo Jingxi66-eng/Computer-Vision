@@ -1,0 +1,30 @@
+from PIL import Image
+import numpy as np
+from sklearn.svm import SVC
+pic='plant.jpg' 
+img=Image.open(pic)
+img.show() 
+img_arr=np.asarray(img,np.float64)
+
+soil_RGB=np.array([[26,45,43],[28,47,45],[8,12,13],[18,30,30],[14,29,22],[10,16,16],[170,251,114],[91,141,166],[14,25,19],[28,44,43]])
+
+plant_RGB=np.array([[24,32,34],[17,32,29],[16,30,30],[16,39,29],[14,40,39],[19,34,31],[18,33,30],[20,35,32]])
+
+RGB_arr=np.concatenate((soil_RGB,plant_RGB),axis=0) 
+
+label=np.append(np.zeros(soil_RGB.shape[0]),np.ones(plant_RGB.shape[0]))
+
+img_reshape=img_arr.reshape([img_arr.shape[0]*img_arr.shape[1],img_arr.shape[2]])
+
+svc=SVC(kernel='rbf',degree=3) 
+svc.fit(RGB_arr,label) 
+predict=svc.predict(img_reshape) 
+soil_bool=predict==0 
+soil_bool=soil_bool[:,np.newaxis] 
+soil_bool_3col=np.concatenate((soil_bool,soil_bool,soil_bool),axis=1) 
+soil_bool_3d=soil_bool_3col.reshape((img_arr.shape[0],img_arr.shape[1],img_arr.shape[2])) 
+
+img_arr[soil_bool_3d]=255 
+img_split=Image.fromarray(img_arr.astype('uint8')) 
+img_split.show() 
+img_split.save('split_plant.jpg') 
